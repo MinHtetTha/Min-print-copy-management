@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shareholder Profit Calculator</title>
+    <title>Min Print & Copy - Shareholder Management App</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -11,196 +11,352 @@
         body {
             font-family: 'Pyidaungsu', sans-serif;
             font-size: 11pt;
+            background-color: #f8fafc;
         }
         .watermark {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%) rotate(-15deg);
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: bold;
-            color: rgba(0, 0, 0, 0.04);
+            color: rgba(0, 0, 0, 0.03);
             pointer-events: none;
             white-space: nowrap;
             z-index: 0;
         }
+        /* Print Stylesheet to only print the voucher */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printArea, #printArea * {
+                visibility: visible;
+            }
+            #printArea {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                border: none;
+                box-shadow: none;
+                padding: 0;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
     </style>
 </head>
-<body class="bg-gray-100 min-h-screen py-8 px-4">
+<body class="min-h-screen flex flex-col">
 
-    <div class="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+    <header class="bg-slate-950 text-white shadow-md sticky top-0 z-50 no-print">
+        <div class="max-w-5xl mx-auto px-4 py-3 flex justify-between items-center">
+            <div class="flex items-center gap-3">
+                <div class="bg-cyan-500 text-slate-950 p-2 rounded-full font-bold w-10 h-10 flex items-center justify-center shadow">
+                    <i class="fa-solid fa-print"></i>
+                </div>
+                <div>
+                    <h1 class="text-base font-bold tracking-wide">Min Print & Copy</h1>
+                    <p class="text-xs text-cyan-400">Shareholder System Pro</p>
+                </div>
+            </div>
+            <div class="text-xs bg-slate-800 px-3 py-1.5 rounded-full text-gray-300 border border-slate-700">
+                <i class="fa-regular fa-calendar-days text-cyan-400 mr-1"></i> <span id="navDate">-</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 max-w-5xl w-full mx-auto p-4 md:p-6 grid grid-cols-1 md:grid-cols-12 gap-6">
         
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200">
-            <h2 class="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <i class="fa-solid fa-calculator text-blue-600"></i> ရှယ်ယာအမြတ်တွက်စနစ်
-            </h2>
+        <div class="md:col-span-7 space-y-6 no-print">
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">စက်ဝယ်ယူမည့် စုစုပေါင်းတန်ဖိုး (ကျပ်)</label>
-                    <input type="number" id="totalCapital" value="700000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">ရှယ်ယာရှင် ထည့်ဝင်ငွေ (ကျပ်)</label>
-                    <input type="number" id="investAmount" value="100000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <hr class="border-gray-200 my-4">
-                
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">ယခုလ စုစုပေါင်းရရှိငွေ/ဝင်ငွေ (ကျပ်)</label>
-                    <input type="number" id="grossRevenue" placeholder="ဥပမာ - 400000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-                
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">လည်ပတ်မှုစရိတ် - မင်၊ စက္ကူ၊ မီးခ စသည် (ကျပ်)</label>
-                    <input type="number" id="expenses" placeholder="ဥပမာ - 100000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <div>
-                    <label class="block text-sm font-semibold text-gray-600 mb-1">အလုပ်လုပ်သူ၏ လုပ်အားခ/ဆိုင်ခ နှုတ်ရန် (ကျပ်)</label>
-                    <input type="number" id="laborCost" placeholder="ဥပမာ - 100000" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none">
-                </div>
-
-                <button onclick="calculateProfit()" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-lg transition duration-200 flex items-center justify-center gap-2 mt-2">
-                    <i class="fa-solid fa-wand-magic-sparkles"></i> အမြတ်တွက်ချက်မည်
+            <div class="bg-white p-2 rounded-xl shadow-sm border border-slate-200 flex gap-2">
+                <button id="tabSetupBtn" onclick="switchTab('setup')" class="flex-1 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-slate-900 text-white">
+                    <i class="fa-solid fa-sliders"></i> ၁။ ရင်းနှီးမှုသတ်မှတ်ချက်
+                </button>
+                <button id="tabProfitBtn" onclick="switchTab('profit')" class="flex-1 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200">
+                    <i class="fa-solid fa-chart-line"></i> ၂။ လစဉ်စာရင်းရှင်းတမ်း
                 </button>
             </div>
-        </div>
 
-        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 flex flex-col justify-between relative overflow-hidden">
-            <div class="watermark uppercase">Min Print & Copy</div>
-            
-            <div class="z-10">
-                <div class="text-center border-b border-dashed border-gray-300 pb-4 mb-4">
-                    <h3 class="text-lg font-bold text-gray-800">အမြတ်ခွဲဝေမှု မှတ်တမ်းဖြတ်ပိုင်း</h3>
-                    <p class="text-xs text-gray-500 mt-1" id="voucherDate">-</p>
+            <div id="tabSetup" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4">
+                <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-info text-cyan-500"></i> အခြေခံရင်းနှီးမြှုပ်နှံမှု အချက်အလက်များ
+                </h2>
+                
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">ဝယ်ယူမည့်ပစ္စည်း/စက်အမည်</label>
+                        <input type="text" id="itemName" value="Canon Laser Printer" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">ရှယ်ယာရှင်အမည်</label>
+                        <input type="text" id="partnerName" value="ကိုလူအေး" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                    </div>
                 </div>
 
-                <div class="space-y-3 text-sm text-gray-700">
-                    <div class="flex justify-between">
-                        <span>စက်တန်ဖိုးစုစုပေါင်း:</span>
-                        <span class="font-semibold" id="vTotalCapital">-</span>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">ပစ္စည်း/စက် စုစုပေါင်းတန်ဖိုး (ကျပ်)</label>
+                        <input type="number" id="totalCapital" value="700000" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
                     </div>
-                    <div class="flex justify-between">
-                        <span>ရှယ်ယာရှင်ထည့်ဝင်ငွေ:</span>
-                        <span class="font-semibold" id="vInvestAmount">-</span>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">၎င်းရှယ်ယာရှင် ထည့်ဝင်ငွေ (ကျပ်)</label>
+                        <input type="number" id="investAmount" value="100000" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
                     </div>
-                    <div class="flex justify-between text-blue-600 font-bold bg-blue-50 px-2 py-1 rounded">
-                        <span>ပိုင်ဆိုင်မှု ရှယ်ယာရာခိုင်နှုန်း:</span>
-                        <span id="vSharePercentage">0%</span>
-                    </div>
-                    
-                    <div class="border-b border-gray-100 my-2"></div>
+                </div>
 
-                    <div class="flex justify-between">
-                        <span>လစဉ် စုစုပေါင်းဝင်ငွေ:</span>
-                        <span id="vGross">-</span>
-                    </div>
-                    <div class="flex justify-between text-red-500">
-                        <span>နှုတ် - အထွေထွေကုန်ကျစရိတ်:</span>
-                        <span id="vExpenses">-</span>
-                    </div>
-                    <div class="flex justify-between text-red-500">
-                        <span>နှုတ် - အလုပ်လုပ်သူလုပ်အားခ:</span>
-                        <span id="vLabor">-</span>
-                    </div>
-                    
-                    <div class="border-b-2 border-double border-gray-300 my-2"></div>
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">ရှယ်ယာစတင်သည့်နေ့စွဲ</label>
+                    <input type="date" id="startDate" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                </div>
 
-                    <div class="flex justify-between text-base font-bold text-green-600 bg-green-50 px-2 py-1 rounded">
-                        <span>ခွဲဝေရန် အသားတင်အမြတ်:</span>
-                        <span id="vNetProfit">-</span>
-                    </div>
-
-                    <div class="border-b border-gray-100 my-2"></div>
-
-                    <div class="flex justify-between text-lg font-bold text-gray-900 bg-yellow-100 px-2 py-2 rounded border border-yellow-300">
-                        <span>ရှယ်ယာရှင် ရမည့်အမြတ်ငွေ:</span>
-                        <span id="vFinalShareProfit">-</span>
-                    </div>
+                <div class="pt-2">
+                    <button onclick="updateVoucherLayout()" class="w-full bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+                        သိမ်းဆည်းပြီး ဒေတာအပ်ဒိတ်လုပ်မည် <i class="fa-solid fa-arrow-right text-xs"></i>
+                    </button>
                 </div>
             </div>
 
-            <div class="z-10 mt-6 pt-4 border-t border-gray-200 grid grid-cols-2 gap-3">
-                <button onclick="window.print()" class="bg-gray-800 hover:bg-gray-900 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-print"></i> PDF / Print
-                </button>
-                <button onclick="shareVoucher()" class="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition">
-                    <i class="fa-solid fa-share-nodes"></i> Share လုပ္ရန္
-                </button>
+            <div id="tabProfit" class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 space-y-4 hidden">
+                <h2 class="text-base font-bold text-slate-800 border-b border-slate-100 pb-2 mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-calculator text-cyan-500"></i> လစဉ် အမြတ်အစွန်းနှင့် စာရင်းရှင်းတမ်း တွက်ချက်ခြင်း
+                </h2>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-600 mb-1">စာရင်းရှင်းမည့် နေ့စွဲ</label>
+                    <input type="date" id="settlementDate" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">စုစုပေါင်း ဝင်ငွေ (ကျပ်)</label>
+                        <input type="number" id="grossRevenue" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">ကုန်ကျစရိတ် (မင်/စက္ကူ/မီး)</label>
+                        <input type="number" id="expenses" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-slate-600 mb-1">နှုတ်ယူမည့် မိမိလုပ်အားခ</label>
+                        <input type="number" id="laborCost" placeholder="0" class="w-full px-3 py-2 border border-slate-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:outline-none">
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <button onclick="calculateProfitAndVoucher()" class="w-full bg-slate-900 hover:bg-slate-950 text-white font-bold py-2.5 rounded-lg transition flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles text-cyan-400"></i> အမြတ်တွက်ချက်ပြီး ဗောက်ချာထုတ်မည်
+                    </button>
+                </div>
             </div>
 
         </div>
-    </div>
+
+        <div class="md:col-span-5 flex flex-col justify-start">
+            
+            <div id="printArea" class="bg-white p-6 rounded-2xl shadow-md border border-slate-200 relative overflow-hidden flex flex-col justify-between min-h-[500px]">
+                <div class="watermark uppercase">Min Print & Copy</div>
+
+                <div class="z-10">
+                    <div class="text-center border-b border-dashed border-slate-300 pb-4 mb-4">
+                        <h3 class="text-lg font-bold text-slate-900 tracking-wide">Min Print & Copy</h3>
+                        <p class="text-[10pt] text-slate-500">သုမောင်ကောလိပ်လမ်း၊ လှိုင်မြို့နယ်၊ ရန်ကုန်။</p>
+                        <p class="text-xs bg-slate-100 text-slate-700 font-bold inline-block px-3 py-0.5 rounded-full mt-2 border border-slate-200">
+                            ရှယ်ယာရှင် စာရင်းရှင်းတမ်းဖြတ်ပိုင်း
+                        </p>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-y-2 text-xs text-slate-600 bg-slate-50 p-3 rounded-xl border border-slate-100 mb-4">
+                        <div><i class="fa-solid fa-cube text-cyan-600 mr-1"></i> ဝယ်ယူမှု: <span id="vItem" class="font-bold text-slate-800">-</span></div>
+                        <div><i class="fa-solid fa-user text-cyan-600 mr-1"></i> ရှယ်ယာရှင်: <span id="vPartner" class="font-bold text-slate-800">-</span></div>
+                        <div><i class="fa-regular fa-calendar mr-1"></i> စတင်နေ့: <span id="vStartDate" class="font-bold text-slate-800">-</span></div>
+                        <div><i class="fa-solid fa-clock-history mr-1"></i> ရှင်းတမ်းနေ့: <span id="vSettlementDate" class="font-bold text-slate-800">-</span></div>
+                    </div>
+
+                    <div class="space-y-2 text-xs text-slate-700">
+                        <div class="flex justify-between">
+                            <span>စက်ဖိုး/ရင်းနှီးငွေ စုစုပေါင်း:</span>
+                            <span id="vTotalCapital" class="font-semibold text-slate-900">-</span>
+                        </div>
+                        <div class="flex justify-between">
+                            <span>၎င်းရှယ်ယာရှင် စိုက်ထုတ်ငွေ:</span>
+                            <span id="vInvestAmount" class="font-semibold text-slate-900">-</span>
+                        </div>
+                        <div class="flex justify-between font-bold text-cyan-600 bg-cyan-50 px-2 py-1 rounded">
+                            <span>ပိုင်ဆိုင်မှု ရှယ်ယာအချိုး ($%$):</span>
+                            <span id="vSharePercentage">0%</span>
+                        </div>
+
+                        <div class="border-b border-dashed border-slate-200 my-2"></div>
+
+                        <div class="flex justify-between">
+                            <span>လစဉ် စုစုပေါင်းရရှိငွေ (Gross):</span>
+                            <span id="vGross" class="font-medium text-slate-900">-</span>
+                        </div>
+                        <div class="flex justify-between text-red-500">
+                            <span>နှုတ် - ဆိုင်လည်ပတ်မှုစရိတ်များ:</span>
+                            <span id="vExpenses">-</span>
+                        </div>
+                        <div class="flex justify-between text-red-500">
+                            <span>နှုတ် - အလုပ်လုပ်သူ လုပ်အားခ:</span>
+                            <span id="vLabor">-</span>
+                        </div>
+
+                        <div class="border-b-2 border-double border-slate-300 my-2"></div>
+
+                        <div class="flex justify-between font-bold text-emerald-600 bg-emerald-50 px-2 py-1 rounded">
+                            <span>ခွဲဝေရန် အသားတင်အမြတ်:</span>
+                            <span id="vNetProfit">-</span>
+                        </div>
+
+                        <div class="border-b border-dashed border-slate-200 my-2"></div>
+
+                        <div class="bg-slate-900 text-white p-3 rounded-xl border border-slate-800 shadow-sm mt-3 flex justify-between items-center">
+                            <div>
+                                <p class="text-[10pt] font-medium text-slate-400">ရှယ်ယာရှင် ရရှိမည့်အမြတ်ငွေ</p>
+                                <p class="text-xs text-cyan-400 font-normal" id="vCalcDetail">0% Of Net Profit</p>
+                            </div>
+                            <div class="text-right">
+                                <span class="text-lg font-bold text-cyan-400" id="vFinalShareProfit">-</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-6 pt-4 border-t border-slate-100 grid grid-cols-2 gap-3 no-print">
+                    <button onclick="window.print()" class="bg-slate-950 hover:bg-slate-900 text-white font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition text-xs">
+                        <i class="fa-solid fa-file-pdf text-red-400"></i> PDF / PRINT
+                    </button>
+                    <button onclick="shareToSocial()" class="bg-cyan-500 hover:bg-cyan-600 text-slate-950 font-bold py-2 px-3 rounded-lg flex items-center justify-center gap-2 transition text-xs">
+                        <i class="fa-solid fa-paper-plane"></i> SHARE ပို့ရန်
+                    </button>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <footer class="bg-slate-100 text-center py-3 text-xs text-slate-500 border-t border-slate-200 no-print">
+        &copy; 2026 Min Print & Copy. Powered by Custom Dashboard Setup.
+    </footer>
 
     <script>
-        // Set Current Date on Load
-        document.getElementById('voucherDate').innerText = `နေ့စွဲ - ${new Date().toLocaleDateString('en-GB')}`;
+        // Set Today Date as Default values
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('startDate').value = today;
+        document.getElementById('settlementDate').value = today;
+        document.getElementById('navDate').innerText = new Date().toLocaleDateString('en-GB');
 
-        function calculateProfit() {
-            // Get values from input
+        // Tab Navigation Mechanism
+        function switchTab(tabName) {
+            const tabSetup = document.getElementById('tabSetup');
+            const tabProfit = document.getElementById('tabProfit');
+            const btnSetup = document.getElementById('tabSetupBtn');
+            const btnProfit = document.getElementById('tabProfitBtn');
+
+            if (tabName === 'setup') {
+                tabSetup.classList.remove('hidden');
+                tabProfit.classList.add('hidden');
+                btnSetup.className = "flex-1 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-slate-900 text-white";
+                btnProfit.className = "flex-1 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200";
+            } else {
+                tabSetup.classList.add('hidden');
+                tabProfit.classList.remove('hidden');
+                btnProfit.className = "flex-1 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-slate-900 text-white";
+                btnSetup.className = "flex-1 py-2.5 rounded-lg font-bold text-sm transition flex items-center justify-center gap-2 bg-gray-100 text-gray-600 hover:bg-gray-200";
+            }
+        }
+
+        // Live Mapping for Tab 1 Setup Data
+        function updateVoucherLayout() {
+            const item = document.getElementById('itemName').value || "-";
+            const partner = document.getElementById('partnerName').value || "-";
             const totalCapital = parseFloat(document.getElementById('totalCapital').value) || 0;
             const investAmount = parseFloat(document.getElementById('investAmount').value) || 0;
-            const grossRevenue = parseFloat(document.getElementById('grossRevenue').value) || 0;
-            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
-            const laborCost = parseFloat(document.getElementById('laborCost').value) || 0;
+            const startDate = document.getElementById('startDate').value;
 
-            if (totalCapital <= 0 || investAmount <= 0) {
-                alert("စက်တန်ဖိုးနှင့် ရှယ်ယာထည့်ဝင်ငွေကို မှန်ကန်စွာ ထည့်သွင်းပေးပါ။");
-                return;
-            }
+            // Math Percentage Formula
+            const sharePercentage = totalCapital > 0 ? ((investAmount / totalCapital) * 100) : 0;
 
-            // Calculate share percentage
-            const sharePercentage = (investAmount / totalCapital) * 100;
-            
-            // Calculate net profit
-            const netProfit = grossRevenue - expenses - laborCost;
-            
-            // Calculate final profit for shareholder
-            // If net profit is negative, shareholder profit will be 0 or dynamic based on agreement
-            const shareholderProfit = netProfit > 0 ? (netProfit * (sharePercentage / 100)) : 0;
-
-            // Update Voucher DOM
+            // DOM Insertion
+            document.getElementById('vItem').innerText = item;
+            document.getElementById('vPartner').innerText = partner;
             document.getElementById('vTotalCapital').innerText = `${totalCapital.toLocaleString()} ကျပ်`;
             document.getElementById('vInvestAmount').innerText = `${investAmount.toLocaleString()} ကျပ်`;
             document.getElementById('vSharePercentage').innerText = `${sharePercentage.toFixed(1)}%`;
+            document.getElementById('vCalcDetail').innerText = `${sharePercentage.toFixed(1)}% Of Net Profit`;
             
-            document.getElementById('vGross').innerText = `${grossRevenue.toLocaleString()} ကျပ်`;
-            document.getElementById('vExpenses').innerText = `-${expenses.toLocaleString()} ကျပ်`;
-            document.getElementById('vLabor').innerText = `-${laborCost.toLocaleString()} ကျပ်`;
-            
-            document.getElementById('vNetProfit').innerText = `${netProfit.toLocaleString()} ကျပ်`;
-            document.getElementById('vFinalShareProfit').innerText = `${Math.round(shareholderProfit).toLocaleString()} ကျပ်`;
-            
-            document.getElementById('voucherDate').innerText = `နေ့စွဲ - ${new Date().toLocaleDateString('en-GB')}`;
+            if(startDate) {
+                const formattedDate = new Date(startDate).toLocaleDateString('en-GB');
+                document.getElementById('vStartDate').innerText = formattedDate;
+            }
+
+            // Push note alert
+            alert("ရင်းနှီးမှုဒေတာများကို ဗောက်ချာပေါ်သို့ အောင်မြင်စွာ တင်ပြီးပါပြီ။");
         }
 
-        function shareVoucher() {
-            const finalProfit = document.getElementById('vFinalShareProfit').innerText;
+        // Calculation & Mapping for Tab 2 Profit Data
+        function calculateProfitAndVoucher() {
+            // Re-run setup values to ensure fresh state
+            const totalCapital = parseFloat(document.getElementById('totalCapital').value) || 0;
+            const investAmount = parseFloat(document.getElementById('investAmount').value) || 0;
+            const sharePercentage = totalCapital > 0 ? (investAmount / totalCapital) : 0;
+
+            // Get Profit fields
+            const gross = parseFloat(document.getElementById('grossRevenue').value) || 0;
+            const expenses = parseFloat(document.getElementById('expenses').value) || 0;
+            const labor = parseFloat(document.getElementById('laborCost').value) || 0;
+            const settlementDate = document.getElementById('settlementDate').value;
+
+            // Calculate Net Profit
+            const netProfit = gross - expenses - labor;
+            // Calculate Shareholder part
+            const finalProfit = netProfit > 0 ? (netProfit * sharePercentage) : 0;
+
+            // Sync to Voucher View
+            document.getElementById('vGross').innerText = `${gross.toLocaleString()} ကျပ်`;
+            document.getElementById('vExpenses').innerText = `-${expenses.toLocaleString()} ကျပ်`;
+            document.getElementById('vLabor').innerText = `-${labor.toLocaleString()} ကျပ်`;
+            document.getElementById('vNetProfit').innerText = `${netProfit.toLocaleString()} ကျပ်`;
+            document.getElementById('vFinalShareProfit').innerText = `${Math.round(finalProfit).toLocaleString()} ကျပ်`;
+
+            if(settlementDate) {
+                const formattedSettDate = new Date(settlementDate).toLocaleDateString('en-GB');
+                document.getElementById('vSettlementDate').innerText = formattedSettDate;
+            }
+
+            alert("ယခုလအမြတ်စာရင်းတွက်ချက်မှု ပြီးမြောက်ပါပြီ။ ညာဘက်ရှိ ဗောက်ချာတွင် ကြည့်ရှုနိုင်ပါသည်။");
+        }
+
+        // Share text generator fallback
+        function shareToSocial() {
+            const partner = document.getElementById('vPartner').innerText;
+            const item = document.getElementById('vItem').innerText;
             const sharePer = document.getElementById('vSharePercentage').innerText;
-            const netProfit = document.getElementById('vNetProfit').innerText;
-            
+            const finalProfit = document.getElementById('vFinalShareProfit').innerText;
+            const sDate = document.getElementById('vSettlementDate').innerText;
+
             if (finalProfit === "-") {
-                alert("ကျေးဇူးပြု၍ အရင်ဦးစွာ တွက်ချက်မှု ပြုလုပ်ပေးပါ။");
+                alert("ကျေးဇူးပြု၍ အရင်ဦးစွာ အမြတ်တွက်ချက်မှု ပြုလုပ်ပေးပါ။");
                 return;
             }
 
-            const text = `📊 *အမြတ်ခွဲဝေမှုဆိုင်ရာ ဖြတ်ပိုင်း*\n\nစက်ပိုင်ဆိုင်မှုအချိုး: ${sharePer}\nယခုလ အသားတင်အမြတ်: ${netProfit}\n-------------------------\n💰 *ရှယ်ယာရှင် ရမည့်အမြတ်ငွေ: ${finalProfit}*`;
-            
-            // Web Share API to directly share text via Viber, Telegram, etc.
+            const message = `📊 *Min Print & Copy - စာရင်းရှင်းတမ်း*\n\n🔹 စက်/ပစ္စည်း: ${item}\n🔹 ရှယ်ယာရှင်: ${partner}\n🔹 ပိုင်ဆိုင်မှုအချိုး: ${sharePer}\n📅 ရှင်းတမ်းနေ့စွဲ: ${sDate}\n-------------------------\n💰 *ရှယ်ယာရှင် ရရှိမည့်အမြတ်ငွေ: ${finalProfit}*`;
+
             if (navigator.share) {
                 navigator.share({
                     title: 'Shareholder Profit Report',
-                    text: text
+                    text: message
                 }).catch(console.error);
             } else {
-                // Fallback to clipboard
-                navigator.clipboard.writeText(text);
-                alert("ဖြတ်ပိုင်းအချက်အလက်များကို Copy ကူးယူပြီးပါပြီ။ Viber သို့မဟုတ် Telegram တွင် Paste ပြုလုပ်ပြီး ပေးပို့နိုင်ပါသည်။");
+                navigator.clipboard.writeText(message);
+                alert("ဗောက်ချာအချက်အလက်များကို ကူးယူပြီးပါပြီ။ Telegram / Viber တွင် Paste လုပ်ပြီး ပေးပို့နိုင်ပါသည်။");
             }
         }
+
+        // Initialize display info
+        updateVoucherLayout();
     </script>
 </body>
 </html>
